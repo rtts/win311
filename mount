@@ -1,0 +1,3 @@
+#!/bin/sh
+mkdir -p mnt
+sudo mount -o loop,offset=32256 -t msdos hda.img mnt

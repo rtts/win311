@@ -1,0 +1,2 @@
+#!/bin/sh
+qemu-system-i386 -hda hda.img -nic user,ipv6=off,model=ne2k_pci -device sb16 -vga cirrus -snapshot -no-shutdown -display gtk,zoom-to-fit=on

@@ -1,3 +1,16 @@
+> [!WARNING]
+> ***GitHub LFS considered harmful***.
+>
+> On 2023-08-13 GitHub has permanently disabled Git LFS for ALL of our
+> repositories because we've "exceeded the data plan". Instead of
+> limiting downloads to the allotted bandwith, they simply let them
+> run wild and then shut it down entirely.
+>
+> Let this be a warning to everyone (considering) using Git LFS on
+> Github. They cannot be trusted. In the meantime, you can download
+> `hda.img` here: https://rtts.eu/download/win311/hda.img
+
+
 Virtual Machine with Windows 3.11
 =================================
 

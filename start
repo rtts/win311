@@ -1,2 +1,29 @@
 #!/bin/sh
-qemu-system-i386 -hda hda.img -nic user,ipv6=off,model=ne2k_pci -device sb16 -vga cirrus -snapshot -no-shutdown -display gtk,zoom-to-fit=on
+
+qemu-system-i386 -icount shift=7 -hda hda.img -nic user,ipv6=off,model=ne2k_pci -device sb16 -vga cirrus -snapshot -no-shutdown -display gtk,zoom-to-fit=on
+
+# Why -icount shift=7?
+#
+# When networking starts, Windows for Workgroups 3.11's NDIS.386 driver
+# measures the CPU speed. It runs 0x100000 (1,048,576) LOOP instructions
+# and times them with the VMM's Get_System_Time service, which counts in
+# milliseconds. It then divides by the elapsed time. If the loop takes
+# less than 1 ms, the elapsed time is 0, the divide faults, and Windows
+# hangs on a black screen right after the logo. This is the same "fast
+# CPU" bug that hit Windows 95 on fast AMD K6 machines.
+#
+# Since QEMU 7.2 (commit 2255da49, "target/i386: Use gen_jmp_rel for
+# loop, repz, jecxz insns"), TCG chains LOOP straight to the next
+# translated block instead of returning to the main loop on every
+# iteration. On a modern host the 1M iterations then finish in well
+# under a millisecond. Whether it fails depends on host load, which is
+# why some people could boot and others could not.
+#
+# -icount shift=7 decouples guest time from host time: each guest
+# instruction advances the virtual clock by 2^7 = 128 ns, so the guest
+# runs at a fixed ~8 MIPS (roughly a fast 486) whatever the host speed.
+# The calibration loop then always takes ~134 ms of guest time and the
+# divide never sees 0. Lower shift values are faster but leave less
+# margin; shift=auto adapts to the host and would bring the bug back.
+#
+# This (finally!) fixes https://github.com/rtts/win311/issues/2
